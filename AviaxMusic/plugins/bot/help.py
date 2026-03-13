@@ -1,17 +1,13 @@
 from typing import Union
-
 from pyrogram import filters, types
 from pyrogram.types import InlineKeyboardMarkup, Message
-
 from AviaxMusic import app
 from AviaxMusic.utils import help_pannel
 from AviaxMusic.utils.database import get_lang
 from AviaxMusic.utils.decorators.language import LanguageStart, languageCB
 from AviaxMusic.utils.inline.help import help_back_markup, private_help_panel
-from config import BANNED_USERS, START_IMG_URL, SUPPORT_GROUP
+from config import BANNED_USERS, START_VID_URL, SUPPORT_GROUP
 from strings import get_string, helpers
-
-
 @app.on_message(filters.command(["help"]) & filters.private & ~BANNED_USERS)
 @app.on_callback_query(filters.regex("settings_back_helper") & ~BANNED_USERS)
 async def helper_private(
@@ -38,20 +34,16 @@ async def helper_private(
         language = await get_lang(update.chat.id)
         _ = get_string(language)
         keyboard = help_pannel(_)
-        await update.reply_photo(
-            photo=START_IMG_URL,
+        await update.reply_video(
+            video=START_VID_URL,
             caption=_["help_1"].format(SUPPORT_GROUP),
             reply_markup=keyboard,
         )
-
-
 @app.on_message(filters.command(["help"]) & filters.group & ~BANNED_USERS)
 @LanguageStart
 async def help_com_group(client, message: Message, _):
     keyboard = private_help_panel(_)
     await message.reply_text(_["help_2"], reply_markup=InlineKeyboardMarkup(keyboard))
-
-
 @app.on_callback_query(filters.regex("help_callback") & ~BANNED_USERS)
 @languageCB
 async def helper_cb(client, CallbackQuery, _):
